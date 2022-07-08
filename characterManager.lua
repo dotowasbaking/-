@@ -1,4 +1,4 @@
-local uRequire = game:HttpGet("https://raw.githubusercontent.com/dotowasbaking/-/main/utilRequire.lua", true)
+local uRequire = loadstring(game:HttpGet("https://raw.githubusercontent.com/dotowasbaking/-/main/utilRequire.lua", true))()
 local maid = uRequire("maid")
 local signal = uRequire("signal")
 
