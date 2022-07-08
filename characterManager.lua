@@ -120,7 +120,9 @@ function characterManager:_removeCharacter(character)
 end
 
 function characterManager:_tableRemove(tbl, obj)
-    return table.remove(tbl, table.find(tbl, obj)) -- yes i made a func so i didnt have to type 4 more characters (workflow so gofly)[rella]
+    table.remove(tbl, table.find(tbl, obj)) -- yes i made a func so i didnt have to type 4 more characters (workflow so gofly)[rella]
+
+    return obj
 end
 
 function characterManager:GetCharacters()
