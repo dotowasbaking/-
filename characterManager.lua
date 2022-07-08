@@ -116,13 +116,11 @@ function characterManager:_removeCharacter(character)
     end
 
     self:_tableRemove(self._characters, character)
-    self:_tableRemove(self._characterMaids[character]):Destroy()
+    self:_tableRemove(self._characterMaids[character], character):Destroy()
 end
 
 function characterManager:_tableRemove(tbl, obj)
-    table.remove(tbl, table.find(tbl, obj)) -- yes i made a func so i didnt have to type 4 more characters (workflow so gofly)[rella]
-
-    return obj
+    return table.remove(tbl, table.find(tbl, obj)) -- yes i made a func so i didnt have to type 4 more characters (workflow so gofly)[rella]
 end
 
 function characterManager:GetCharacters()
