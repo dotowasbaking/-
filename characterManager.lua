@@ -84,7 +84,7 @@ function characterManager:_addCharacter(character)
         self._aliveCharacters[#self._aliveCharacters + 1] = character
 
         newHumanoid.Died:Connect(function()
-            self:_tableRemove(self._aliveCharacters, character)
+            table.remove(self._aliveCharacters, character)
             self.CharacterDied:Fire(character)
         end)
     end
