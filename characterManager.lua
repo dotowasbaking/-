@@ -76,7 +76,7 @@ function characterManager:_addCharacter(character)
     self._characters[#self._characters + 1] = character
     local characterMaid = self._maid:AddTask(maid.new())
 
-    self._characterMaids[character] = characterMaid
+    self._characterMaids[character.Name] = characterMaid
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
     local function addHumanoid(newHumanoid)
@@ -110,13 +110,15 @@ end
 function characterManager:_removeCharacter(character)
     self.CharacterRemoving:Fire(character)
     local characterIndex = table.find(self._aliveCharacters, character)
+    print("removing rella", character)
+    print("cindex", characterIndex)
 
     if characterIndex then
         table.remove(self._aliveCharacters, characterIndex)
     end
 
     self:_tableRemove(self._characters, character)
-    self._characterMaids[character]:Destroy()
+    self._characterMaids[character.Name]:Destroy()
 end
 
 function characterManager:_tableRemove(tbl, obj)
