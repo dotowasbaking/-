@@ -134,7 +134,9 @@ function characterManager:GetAliveCharacters()
 end
 
 function characterManager:Destroy()
+    self._maid:Destroy()
 
+    setmetatable(self, nil)
 end
 
 return characterManager
