@@ -56,6 +56,7 @@ function characterManager:_addPlayer(player)
     end))
 
     playerMaid:AddTask(player.CharacterRemoving:Connect(function(character)
+        warn(character)
         self:_removeCharacter(character)
     end))
 
