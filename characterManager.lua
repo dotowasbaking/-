@@ -116,7 +116,7 @@ function characterManager:_removeCharacter(character)
     end
 
     self:_tableRemove(self._characters, character)
-    self:_tableRemove(self._characterMaids[character], character):Destroy()
+    self:_tableRemove(self._characterMaids, character):Destroy()
 end
 
 function characterManager:_tableRemove(tbl, obj)
