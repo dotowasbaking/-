@@ -74,35 +74,29 @@ end
 
 function characterManager:_addCharacter(character)
     self._characters[#self._characters + 1] = character
-    local characterMaid = maid.new()
-    self._maid:AddTask(characterMaid)
-
-    self._characterMaids[character.Name] = characterMaid
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
     local function addHumanoid(newHumanoid)
         if newHumanoid.Health <= 0 then
-            characterMaid:Destroy()
             return
         end
 
         self._aliveCharacters[#self._aliveCharacters + 1] = character
 
-        characterMaid:AddTask(newHumanoid.Died:Connect(function()
+        newHumanoid.Died:Connect(function()
             self:_tableRemove(self._aliveCharacters, character)
             self.CharacterDied:Fire(character)
-            characterMaid:Destroy()
-        end))
+        end)
     end
 
     if humanoid then
         addHumanoid(humanoid)
     else
-        characterMaid:AddTask(character.ChildAdded:Connect(function(child)
+        character.ChildAdded:Connect(function(child)
             if child:IsA("Humanoid") then
                 addHumanoid(child)
             end
-        end))
+        end)
     end
 
     self.CharacterAdded:Fire(character)
@@ -116,7 +110,6 @@ function characterManager:_removeCharacter(character)
         table.remove(self._aliveCharacters, characterIndex)
     end
 
-    self._characterMaids[character.Name]:Destroy()
     self:_tableRemove(self._characters, character)
 end
 
