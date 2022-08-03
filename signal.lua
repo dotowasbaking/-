@@ -41,7 +41,7 @@ function signal:Wait()
 end
 
 function signal:Fire(...)
-    for i, v in ipairs(self._tempConnections) do
+    for i, v in pairs(self._tempConnections) do
         task.spawn(v, ...)
 
         self._tempConnections[i] = nil

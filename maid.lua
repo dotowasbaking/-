@@ -12,6 +12,8 @@ function maid:_cleanTask(task)
             task()
         elseif taskType == "RBXScriptConnection" then
             task:Disconnect()
+        elseif taskType == "thread" then
+            task.cancel(task)
         elseif task.Destroy then
             task:Destroy()
         else
@@ -71,6 +73,7 @@ function maid.new()
     self._validTaskTypes = {
         ["function"] = true;
         ["RBXScriptConnection"] = true;
+        ["thread"] = true;
     }
 
     self._tasks = {}
