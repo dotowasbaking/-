@@ -290,6 +290,9 @@ stds.roblox = {
         warn = empty;
         UserSettings = empty;
 
+        -- Keywords
+        continue = empty;
+
         -- Libraries
         math = def_fields({"abs", "acos", "asin", "atan", "atan2", "ceil", "clamp", "cos", "cosh",
             "deg", "exp", "floor", "fmod", "frexp", "huge", "ldexp", "log", "log10", "max", "min",
@@ -321,7 +324,7 @@ stds.roblox = {
             "Red", "Yellow", "Green", "Blue"}),
 
         CFrame = def_fields({"new", "fromEulerAnglesXYZ", "Angles", "fromOrientation",
-            "fromAxisAngle", "fromMatrix"}),
+            "fromAxisAngle", "fromMatrix", "lookAt"}),
 
         Color3 = def_fields({"new", "fromRGB", "fromHSV", "toHSV"}),
 
