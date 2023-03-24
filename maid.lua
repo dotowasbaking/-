@@ -1,85 +1,87 @@
-local maid = {}
+--- Maid class for managing things
+-- @classmod Maid
+-- @author frick
 
-maid.__index = maid
+local ContextActionService = game:GetService("ContextActionService")
 
-function maid:_cleanTask(task)
-    if not task then
-        self:_log("Task expected, got nil.")
-    else
-        local taskType = typeof(task)
+local Maid = {}
+Maid.__index = Maid
 
-        if taskType == "function" then
-            task()
-        elseif taskType == "RBXScriptConnection" then
-            task:Disconnect()
-        elseif taskType == "thread" then
-            task.cancel(task)
-        elseif task.Destroy then
-            task:Destroy()
-        else
-            self:_log(("Fatal error, unable to clean task. (%s)"):format(taskType))
-        end
-    end
-end
-
-function maid:_log(msg)
-    self._logs = ("%s%s\n"):format(self._logs, msg)
-end
-
-function maid:AddTask(task)
-    if not self._validTaskTypes[typeof(task)] and not task.Destroy then
-        self:_log("Invalid task.")
-
-        return
-    end
-
-    self._tasks[#self._tasks + 1] = task
-
-    return task
-end
-
-function maid:CleanTask(task)
-    local index = table.find(self._tasks, task)
-    
-    if not index then
-        self:_log(("Unable to find task with type %s, ignoring."):format(typeof(task)))
-    end
-
-    self:_cleanTask(task)
-
-    table.remove(self._tasks, index)
-end
-
-function maid:CleanUp()
-    for _, task in ipairs(self._tasks) do
-        self:_cleanTask(task)
-    end
-
-    self._tasks = {}
-end
-
-function maid:GetLogs()
-    return self._logs
-end
-
-function maid:Destroy()
-    self:CleanUp()
-
-    setmetatable(self, nil)
-end
-
-function maid.new()
-    local self = setmetatable({}, maid)
-    self._validTaskTypes = {
-        ["function"] = true;
-        ["RBXScriptConnection"] = true;
-        ["thread"] = true;
-    }
-
-    self._tasks = {}
-    self._logs = ""
+function Maid.new()
+    local self = setmetatable({
+        _tasks = {};
+        _boundActions = {};
+    }, Maid)
 
     return self
 end
 
-return maid
+function Maid:AddTask(obj)
+    table.insert(self._tasks, obj)
+    return obj
+end
+
+function Maid:BindAction(name, ...)
+    self._boundActions[name] = true
+    ContextActionService:BindAction(name, ...)
+end
+
+function Maid:BindActionAtPriority(name, ...)
+    self._boundActions[name] = true
+    ContextActionService:BindActionAtPriority(name, ...)
+end
+
+function Maid:UnbindAction(name)
+    self._boundActions[name] = nil
+    ContextActionService:UnbindAction(name)
+end
+
+function Maid:Destroy()
+    for actionName, _ in pairs(self._boundActions) do
+        ContextActionService:UnbindAction(actionName)
+    end
+
+    for i, obj in pairs(self._tasks) do
+        self:_cleanTask(obj)
+        self._tasks[i] = nil
+    end
+
+    setmetatable(self, nil)
+end
+
+function Maid:_cleanTask(obj)
+    if obj then
+        local taskType = typeof(obj)
+
+        if taskType == "function" then
+            obj()
+        elseif taskType == "Instance" or (taskType == "table" and obj.Destroy) then
+            obj:Destroy()
+        elseif taskType == "RBXScriptConnection" or (taskType == "table" and obj.Disconnect) then
+            obj:Disconnect()
+        elseif taskType == "thread" then
+            task.cancel(obj)
+        else
+            warn(("[Maid] - Unknown task type %q, ignoring")
+                :format(taskType), obj, tostring(obj), debug.traceback())
+        end
+    end
+end
+
+function Maid:__newindex(index, obj)
+    assert(not self[index], "Index reserved")
+    local oldObj = self._tasks[index]
+
+    if oldObj == obj then
+        --warn("[Maid] - Attempt to overwrite with same task, ignoring", obj, debug.traceback())
+        return
+    end
+
+    if oldObj then
+        self:_cleanTask(oldObj)
+    end
+
+    self._tasks[index] = obj
+end
+
+return Maid
